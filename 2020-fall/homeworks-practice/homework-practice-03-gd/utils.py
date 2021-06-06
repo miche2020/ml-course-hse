@@ -51,7 +51,7 @@ class BaseDescent:
         :param y: objects' targets
         :return: gradient: np.ndarray
         """
-        pass
+        
 
 
 class GradientDescent(BaseDescent):
@@ -77,6 +77,9 @@ class GradientDescent(BaseDescent):
         :param gradient: gradient
         :return: weight difference: np.ndarray
         """
+        delta = gradient * self.eta(iteration)
+        self.w = self.w - delta
+        return delta 
         # TODO: implement updating weights function
         raise NotImplementedError('GradientDescent update_weights function not implemented')
 
@@ -88,7 +91,8 @@ class GradientDescent(BaseDescent):
         :return: gradient: np.ndarray
         """
         # TODO: implement calculating gradient function
-        raise NotImplementedError('GradientDescent calc_gradient function not implemented')
+        return (X.T.dot(X.dot(self.w) - y)) * 2.0 / X.shape[0]
+
 
 
 class StochasticDescent(BaseDescent):
