@@ -81,7 +81,7 @@ class GradientDescent(BaseDescent):
         self.w = self.w - delta
         return delta 
         # TODO: implement updating weights function
-        raise NotImplementedError('GradientDescent update_weights function not implemented')
+        
 
     def calc_gradient(self, X: np.ndarray, y: np.ndarray) -> np.ndarray:
         """
@@ -122,7 +122,9 @@ class StochasticDescent(BaseDescent):
         :return: weight difference: np.ndarray
         """
         # TODO: implement updating weights function
-        raise NotImplementedError('StochasticDescent update_weights function not implemented')
+        delta = gradient * self.eta(iteration)
+        self.w = self.w - delta
+        return delta 
 
     def calc_gradient(self, X: np.ndarray, y: np.ndarray) -> np.ndarray:
         """
@@ -131,8 +133,9 @@ class StochasticDescent(BaseDescent):
         :param y: objects' targets
         :return: gradient: np.ndarray
         """
+        ind = np.random.randint(X.shape[0],size=self.batch_size)
         # TODO: implement calculating gradient function
-        raise NotImplementedError('StochasticDescent calc_gradient function not implemented')
+        return (X[ind, :].T.dot(X[ind, :].dot(self.w) - y[ind])) * 2.0 / X[ind,:].shape[0]
 
 
 class MomentumDescent(BaseDescent):
