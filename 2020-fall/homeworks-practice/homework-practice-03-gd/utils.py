@@ -166,7 +166,9 @@ class MomentumDescent(BaseDescent):
         :return: weight difference: np.ndarray
         """
         # TODO: implement updating weights function
-        raise NotImplementedError('MomentumDescent update_weights function not implemented')
+        self.h = self.alpha * self.h + self.eta(iteration) * gradient
+        self.w -= self.h
+        return self.h
 
     def calc_gradient(self, X: np.ndarray, y: np.ndarray) -> np.ndarray:
         """
@@ -176,7 +178,7 @@ class MomentumDescent(BaseDescent):
         :return: gradient: np.ndarray
         """
         # TODO: implement calculating gradient function
-        raise NotImplementedError('MomentumDescent calc_gradient function not implemented')
+        return (X.T.dot(X.dot(self.w) - y)) * 2.0 / X.shape[0]
 
 
 class Adagrad(BaseDescent):
