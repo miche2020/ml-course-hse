@@ -208,8 +208,11 @@ class Adagrad(BaseDescent):
         :param gradient: gradient estimate
         :return: weight difference: np.ndarray
         """
-        # TODO: implement updating weights function
-        raise NotImplementedError('Adagrad update_weights function not implemented')
+        self.g = self.g + gradient**2
+        delta = (self.eta(iteration) / (self.eps+self.g)**0.5) * gradient
+        self.w = self.w - delta
+        return delta
+
 
     def calc_gradient(self, X: np.ndarray, y: np.ndarray) -> np.ndarray:
         """
@@ -219,7 +222,7 @@ class Adagrad(BaseDescent):
         :return: gradient: np.ndarray
         """
         # TODO: implement calculating gradient function
-        raise NotImplementedError('Adagrad calc_gradient function not implemented')
+        return (X.T.dot(X.dot(self.w) - y)) * 2.0 / X.shape[0]
 
 
 class GradientDescentReg(GradientDescent):
