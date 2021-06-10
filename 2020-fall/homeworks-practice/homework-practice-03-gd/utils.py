@@ -324,6 +324,7 @@ class LinearRegression:
         self.tolerance = tolerance
         self.max_iter = max_iter
         self.loss_history = []
+        self.w = self.descent.w
 
     def fit(self, X: np.ndarray, y: np.ndarray) -> LinearRegression:
         """
@@ -332,8 +333,14 @@ class LinearRegression:
         :param y: objects' target
         :return: self
         """
-        # TODO: fit weights to X and y
-        raise NotImplementedError('LinearRegression fit function not implemented')
+        for i in range(self.max_iter):
+            gradient = self.descent.calc_gradient(X,y)
+            delta = self.descent.update_weights(gradient, i)
+            self.w = self.w - delta
+            if np.sum(delta ** 2) < self.tolerance:
+                break
+        return self
+          
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         """
@@ -351,7 +358,7 @@ class LinearRegression:
         :param y: objects' target
         """
         # TODO: calculate loss and save it to loss_history
-        raise NotImplementedError('LinearRegression calc_loss function not implemented')
+        self.loss_history.append(np.mean((self.predict(X) - y) ** 2))
 
 
 ###########################################################
