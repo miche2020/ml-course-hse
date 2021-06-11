@@ -208,8 +208,8 @@ class Adagrad(BaseDescent):
         :param gradient: gradient estimate
         :return: weight difference: np.ndarray
         """
-        self.g = self.g + gradient**2
-        delta = (self.eta(iteration) / (self.eps+self.g)**0.5) * gradient
+        self.g = self.g + gradient ** 2
+        delta = (self.eta(iteration) / (self.eps+self.g) ** 0.5) * gradient
         self.w = self.w - delta
         return delta
 
@@ -334,11 +334,12 @@ class LinearRegression:
         :return: self
         """
         for i in range(self.max_iter):
-            gradient = self.descent.calc_gradient(X,y)
-            delta = self.descent.update_weights(gradient, i)
+            self.calc_loss(X, y)
+            delta = self.descent.step(X, y, i)
             self.w = self.w - delta
             if np.sum(delta ** 2) < self.tolerance:
                 break
+                
         return self
           
 
@@ -348,8 +349,9 @@ class LinearRegression:
         :param X: objects' features
         :return: predicted targets
         """
-        # TODO: calculate prediction for X
-        raise NotImplementedError('LinearRegression predict function not implemented')
+        return np.dot(np.hstack([np.ones((X.shape[0], 1)), X])
+, self.w)
+        
 
     def calc_loss(self, X: np.ndarray, y: np.ndarray) -> None:
         """
