@@ -59,7 +59,7 @@ class GradientDescent(BaseDescent):
     Full gradient descent class
     """
 
-    def __init__(self, w0: np.ndarray, lambda_: float, s0: float = s0_default, p: float = p_default):
+    def __init__(self, w0: np.ndarray, lambda_: float, s0: float = s0_default, p: float = p_default,eta=0.01):
         """
         :param w0: weight initialization
         :param lambda_: learning rate parameter (float)
@@ -67,8 +67,9 @@ class GradientDescent(BaseDescent):
         :param p: learning rate parameter (float)
         """
         super().__init__()
-        self.eta = lambda k: lambda_ * (s0 / (s0 + k)) ** p
+        #self.eta = lambda k: lambda_ * (s0 / (s0 + k)) ** p
         self.w = np.copy(w0)
+        self.eta=eta
 
     def update_weights(self, gradient: np.ndarray, iteration: int) -> np.ndarray:
         """
@@ -77,7 +78,7 @@ class GradientDescent(BaseDescent):
         :param gradient: gradient
         :return: weight difference: np.ndarray
         """
-        delta = gradient * self.eta(iteration)
+        delta = gradient * self.eta#(iteration)
         self.w = self.w - delta
         return delta 
         # TODO: implement updating weights function
@@ -133,7 +134,7 @@ class StochasticDescent(BaseDescent):
         :param y: objects' targets
         :return: gradient: np.ndarray
         """
-        ind = np.random.randint(X.shape[0],size=self.batch_size)
+        ind = np.random.randint(X.shape[0],size = self.batch_size)
         # TODO: implement calculating gradient function
         return (X[ind, :].T.dot(X[ind, :].dot(self.w) - y[ind])) * 2.0 / X[ind,:].shape[0]
 
@@ -208,7 +209,7 @@ class Adagrad(BaseDescent):
         :param gradient: gradient estimate
         :return: weight difference: np.ndarray
         """
-        self.g = self.g + gradient ** 2
+        self.g += gradient ** 2
         delta = (self.eta(iteration) / (self.eps+self.g) ** 0.5) * gradient
         self.w = self.w - delta
         return delta
@@ -333,7 +334,10 @@ class LinearRegression:
         :param y: objects' target
         :return: self
         """
+        self.descent.w = np.ones(X.shape[1])
+        self.w = self.descent.w.copy()
         for i in range(self.max_iter):
+       
             self.calc_loss(X, y)
             delta = self.descent.step(X, y, i)
             self.w = self.w - delta
@@ -349,8 +353,8 @@ class LinearRegression:
         :param X: objects' features
         :return: predicted targets
         """
-        return np.dot(np.hstack([np.ones((X.shape[0], 1)), X])
-, self.w)
+        return np.dot(self.w,X)
+    
         
 
     def calc_loss(self, X: np.ndarray, y: np.ndarray) -> None:
