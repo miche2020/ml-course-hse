@@ -13,7 +13,7 @@ eps_default: float = 1e-8
 
 mu_default = 1e-2
 
-tolerance_default: float = 1e-3
+tolerance_default: float = 1e-7
 max_iter_default: int = 1000
 
 
@@ -67,9 +67,9 @@ class GradientDescent(BaseDescent):
         :param p: learning rate parameter (float)
         """
         super().__init__()
-        #self.eta = lambda k: lambda_ * (s0 / (s0 + k)) ** p
+        self.eta = lambda k: lambda_ * (s0 / (s0 + k)) ** p
         self.w = np.copy(w0)
-        self.eta=eta
+
 
     def update_weights(self, gradient: np.ndarray, iteration: int) -> np.ndarray:
         """
@@ -78,7 +78,7 @@ class GradientDescent(BaseDescent):
         :param gradient: gradient
         :return: weight difference: np.ndarray
         """
-        delta = gradient * self.eta#(iteration)
+        delta = gradient * self.eta(iteration)
         self.w = self.w - delta
         return delta 
         # TODO: implement updating weights function
@@ -334,28 +334,30 @@ class LinearRegression:
         :param y: objects' target
         :return: self
         """
-        self.descent.w = np.ones(X.shape[1])
-        self.w = self.descent.w.copy()
-        for i in range(self.max_iter):
-       
+        #self.descent.w = np.zeros(X.shape[1])
+        self.w = np.zeros(X.shape[1])
+        i = 0
+        
+        
+        while i < self.max_iter:
             self.calc_loss(X, y)
             delta = self.descent.step(X, y, i)
             self.w = self.w - delta
             if np.sum(delta ** 2) < self.tolerance:
                 break
-                
+#             print(self.w)
+#             print((np.mean(self.predict(X)-y)**2))
+            i += 1
+        
         return self
-          
-
+        
     def predict(self, X: np.ndarray) -> np.ndarray:
         """
         Getting objects, predicting targets
         :param X: objects' features
         :return: predicted targets
         """
-        return np.dot(self.w,X)
-    
-        
+        return np.dot(X,self.w)
 
     def calc_loss(self, X: np.ndarray, y: np.ndarray) -> None:
         """
@@ -363,8 +365,8 @@ class LinearRegression:
         :param X: objects' features
         :param y: objects' target
         """
-        # TODO: calculate loss and save it to loss_history
         self.loss_history.append(np.mean((self.predict(X) - y) ** 2))
+
 
 
 ###########################################################
