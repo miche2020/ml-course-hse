@@ -26,9 +26,41 @@ def find_best_split(feature_vector, target_vector):
     :return gini_best: оптимальное значение критерия Джини (число)
     """
     # ╰( ͡° ͜ʖ ͡° )つ──☆*:・ﾟ
+    feature_vector = np.array(feature_vector)
+    target_vector = np. array(target_vector)
+    n = len(feature_vector) # Кол-во объектов
+    sort_ind = np.argsort(feature_vector) # Отсортированные индексы по возрастанию значения
+    
+    f_column_s = feature_vector[sort_ind] # Отсортированная колонка
+    all_col = f_column_s[: -1] + f_column_s[1: ] # сложение 2 array для последующего нахождения среднего
+    thresh, thresh_ind = np.unique(all_col, return_index=True) # получение комбинации порогов, нужно треш поделить на 2
+    thresh_ind = (- thresh_ind + (n - 2))[::-1]
+    thresh_ind = thresh_ind[f_column_s[thresh_ind]!= f_column_s[thresh_ind+1]]
+    thresh = all_col[thresh_ind]
+    thresh = thresh / 2
+     
+    t_columns_s = target_vector[sort_ind] # сортировка целевого столбца
+    count_1_l = np.cumsum(t_columns_s)[: -1] # 257
+    count_0_l = np.cumsum(np.ones(n) - t_columns_s)[: -1] #257
+    count_1_r = np.sum(t_columns_s) - count_1_l # 257
+    count_0_r = n - np.sum(t_columns_s) - count_0_l # 257
+    
+    R_l_size = np.arange(1, n)
+    R_r_size = n - np.arange(1, n)
+    
+    H_R_l = np.ones(n - 1) - (count_1_l / R_l_size) ** 2 - (count_0_l / R_l_size) ** 2
+    H_R_r = np.ones(n - 1) - (count_1_r / R_r_size) ** 2 - (count_0_r / R_r_size) ** 2
+    
+    gini = - R_l_size / n * H_R_l - R_r_size / n * H_R_r 
+    gini = gini[thresh_ind]
+    best = np.argmax(gini)
+    thresh_best = thresh[best]
+    gini_best = gini[best]
+    
 
-    pass
-
+    return (thresh, gini, thresh_best,gini_best)
+    
+    
 
 class DecisionTree:
     def __init__(self, feature_types, max_depth=None, min_samples_split=None, min_samples_leaf=None):
